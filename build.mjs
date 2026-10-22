@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const dir=path.dirname(fileURLToPath(import.meta.url)),src=path.join(dir,'src');
+let head=fs.readFileSync(path.join(src,'head.html'),'utf8');
+head=head.replace('</style>','\n'+fs.readFileSync(path.join(src,'village.css'),'utf8')+'\n</style>');
+head=head.replace(/환청과 큰 목소리/g,'기억의 자막과 빛').replace('갑작스러운 음성·깜빡임','빛과 자막 연출').replace('갑작스러운 큰 목소리와 깜빡임이 있습니다','이상현상과 빛의 변화가 있습니다');
+head=head.replace('VOL. 02','VOL. 04').replace('VOL.02','VOL.04');
+head=head.replace('소리와 함께 산책하는 것을 권장합니다','첨부한 A Brighter Age 음악이 환청처럼 계속 흐릅니다');
+head=head.replace('이 단지에서 누군가 만진 물건은 모두 기록되고, 같은 링크로 들어온 모든 방문자에게 손자국으로 보입니다. 기록은 공개 중계 서버와 각 방문자의 브라우저에 함께 남습니다.','만진 물건과 함께 가꾼 공간은 이 단지에 남습니다. 같은 주소로 들어온 사람들은 같은 기억과 같은 정원을 봅니다.');
+head=head.replace('실시간 동기화는 공개 MQTT 중계 서버(EMQX · HiveMQ · Eclipse Mosquitto 공개 테스트 브로커)를 씁니다. 위치와 익명 방문자 번호, 만진 물건 기록만 전송하며 개인 정보는 보내지 않습니다. TTS 없이 음악과 환경음이 흐릅니다.','동물·크리처 10마리(친화 4 · 적대 6), 자율 주민 10명과 함께하는 단지입니다. 가꾸기에서 화단·길·빛·아치·벤치·디딤대를 놓을 수 있습니다. 배경 음악: 사용자가 제공한 A Brighter Age Frutiger Aero Ambience. TTS 없이 음악과 환경음이 흐릅니다.');
+head=head.replace('<div class="control-row"><span>일시정지 / 계속</span>','<div class="control-row"><span>공동 정원 가꾸기</span><span>가꾸기 버튼 / <kbd>B</kbd> · 놓기 <kbd>F</kbd> · 회전 <kbd>Q</kbd></span></div><div class="control-row"><span>동물과 친해지기</span><span>가까이서 터치 / <kbd>E</kbd></span></div><div class="control-row"><span>일시정지 / 계속</span>');
+const files=['00-core','01-world','02-models','03-eggdata','04-skyline','05-underground','06-elevator','07-player','08-audio','09-voice','10-effects','11-eggs','12-interact','13-net','14-ui','19-static-transport','16-village','17-interiors','18-combat-view','15-loop'];
+const body=files.map(n=>'// ── '+n+'.js ──\n'+fs.readFileSync(path.join(src,n+'.js'),'utf8')).join('\n');
+const script="'use strict';\n(() => {\n"+body+'\n})();';
+fs.writeFileSync(path.join(dir,'index.html'),head+'<script src="./config.js"></script><script src="./world-engine.js"></script><script src="./world-systems.js"></script>\n<script>\n'+script+'\n</script>\n'+fs.readFileSync(path.join(src,'tail.html'),'utf8'));
+fs.writeFileSync('/private/tmp/apt3-syntax.js',script);
+console.log('Built VOL.04: '+Math.round(fs.statSync(path.join(dir,'index.html')).size/1024)+' KiB');
