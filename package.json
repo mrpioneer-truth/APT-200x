@@ -1,0 +1,6 @@
+{
+  "name": "apt-200x-village", "version": "4.0.0", "private": true,
+  "description": "APT 200X VOL.04 — 함께 가꾸는 오후",
+  "engines": {"node": ">=22"},
+  "scripts": {"start": "node server.mjs", "build": "node build.mjs", "test": "node --test test/*.test.mjs"}
+}
